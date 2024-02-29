@@ -119,7 +119,7 @@ const Login: React.FC = () => {
             >
               <span>~ Create account</span>
               <span className="ml-1">
-                <u>Click here</u>
+                <u onClick={()=>navigate('/register')}>Click here</u>
               </span>
             </label>
           </div>

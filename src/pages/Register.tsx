@@ -157,7 +157,7 @@ export default function Register() {
             >
               <span>~ for login</span>
               <span className="ml-1">
-                <u>Click here</u>
+                <u onClick={()=>navigate('/login')}>Click here</u>
               </span>
             </label>
           </div>
