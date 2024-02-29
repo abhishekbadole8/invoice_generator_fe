@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-const hostname = `https://invoice-gen.up.railway.app/`;
+const hostname = `https://invoice-gen.up.railway.app`;
 
 interface UserState {
   loading: boolean;
