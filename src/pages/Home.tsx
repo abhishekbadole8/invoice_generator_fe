@@ -1,20 +1,27 @@
 import { useSelector } from "react-redux";
 import AddProduct from "../components/AddProduct";
-import { RootState } from "@reduxjs/toolkit/query";
 import { useDispatch } from "react-redux";
-import { clearProducts } from "../store/store/productSlice";
+import { clearProducts } from "../store/productSlice";
 import axios from "axios";
 
+interface Product {
+  _id: any;
+  name: string;
+  quantity: number;
+  rate: number;
+}
 export default function Home() {
   const dispatch = useDispatch();
 
-  const { products } = useSelector((state: RootState) => state.products);
+  const { products } = useSelector((state: any) => state.products);
 
   const handleDownloadPDF = async () => {
-    const token = localStorage.getItem("token");
-
-    await axios
-      .post(
+    try {
+      const token = localStorage.getItem("token");
+      if (products.length === 0) {
+        return;
+      }
+      const response = await axios.post(
         "http://localhost:5001/api/product/add",
         { cartItems: products },
         {
@@ -22,17 +29,17 @@ export default function Home() {
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then(() => {
-        dispatch(clearProducts());
-        console.log("sucess");
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-      });
+      );
+      const pdfData = await response.data;
 
-    // For demo purposes, just clear products array without API call
-    dispatch(clearProducts());
+      var blob = new Blob([pdfData], { type: "application/pdf" });
+      var blobURL = URL.createObjectURL(blob);
+      window.open(blobURL);
+
+      dispatch(clearProducts());
+    } catch (error: any) {
+      console.error("Error generating PDF:", error);
+    }
   };
 
   return (
@@ -45,15 +52,15 @@ export default function Home() {
       <div className="mt-8 w-full max-w-lg ml-4">
         <h2 className="text-xl font-semibold mb-4">Added Products</h2>
 
-        {products.map((product, index) => {
-          const { name, quantity, rate } = product;
+        {products.map((product: Product) => {
+          const { _id, name, quantity, rate } = product;
 
           const totalWithoutGST = quantity * rate;
           const totalWithGST = totalWithoutGST + totalWithoutGST * 0.18;
 
           return (
             <div
-              key={index}
+              key={_id}
               className="bg-white rounded-lg overflow-hidden shadow-md mb-4"
             >
               <div className="p-4">

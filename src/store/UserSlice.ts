@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-
 const hostname = `http://localhost:5001`;
 
 interface UserState {
@@ -10,12 +9,17 @@ interface UserState {
 }
 
 interface UserCredential {
-  name: string | null;
+  name: string;
   email: string;
   password: string;
 }
 
-export const loginUser = createAsyncThunk<string, UserCredential>(
+interface loginUser {
+  email: string;
+  password: string;
+}
+
+export const loginUser = createAsyncThunk<string, loginUser>(
   "user/login",
   async (userCredential) => {
     const request = await axios.post<{ authToken: string }>(
@@ -23,7 +27,7 @@ export const loginUser = createAsyncThunk<string, UserCredential>(
       userCredential
     );
     const response = request.data.authToken;
-    localStorage.setItem("token", response);    
+    localStorage.setItem("token", response);
     return response;
   }
 );
@@ -31,13 +35,14 @@ export const loginUser = createAsyncThunk<string, UserCredential>(
 export const registerUser = createAsyncThunk<string, UserCredential>(
   "user/register",
   async (userCredential) => {
-    const request = await axios.post<{ authToken: string }>(
-      `${hostname}/api/user/register`,
-      userCredential
-    );
-    const response = request.data
-    if (response) {      
+    try {
+      await axios.post<{ authToken: string }>(
+        `${hostname}/api/user/register`,
+        userCredential
+      );
       return true;
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message);
     }
   }
 );
@@ -71,7 +76,7 @@ const userSlice = createSlice({
         if (action.error.message) {
           state.error = "access denied";
         } else {
-          state.error = action.error.message ?? null;
+          state.error = action.error.message || "Login failed";
         }
         state.error = null;
       })
@@ -85,7 +90,7 @@ const userSlice = createSlice({
         registerUser.fulfilled,
         (state, action: PayloadAction<string>) => {
           state.loading = false;
-          state.user = action.payload;
+          state.user = action.payload ? "User registered successfully" : null;
           state.error = null;
         }
       )
@@ -96,7 +101,7 @@ const userSlice = createSlice({
         if (action.error.message) {
           state.error = "registration failed";
         } else {
-          state.error = action.error.message ?? null;
+          state.error = action.error.message || "Registration failed";
         }
         state.error = null;
       });

@@ -7,7 +7,9 @@ const store = configureStore({
   reducer:{
     user: userReducer,
     products: productsReducer
-  }
+  },
+
 });
 
+export type AppDispatch = typeof store.dispatch
 export default store;

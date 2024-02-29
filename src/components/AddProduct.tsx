@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { useDispatch } from "react-redux";
-import { addProduct } from "../store/store/productSlice";
+import { addProduct } from "../store/productSlice";
 
 export default function AddProduct() {
   const dispatch = useDispatch();

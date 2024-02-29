@@ -1,18 +1,19 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../store/store/UserSlice";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { loginUser } from "../store/UserSlice";
+import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../store/configureStore";
 
-interface UserCredential {
+interface UserCredentia {
   email: string;
   password: string;
 }
 
 const Login: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const [inputValue, setInputValue] = useState<UserCredential>({
+  const [inputValue, setInputValue] = useState<UserCredentia>({
     email: "",
     password: "",
   });
@@ -21,7 +22,7 @@ const Login: React.FC = () => {
     password: "",
     generic: "",
   });
-const {error}=useSearchParams((state)=>state.user)
+
   const validateForm = () => {
     const errors: any = {};
 
@@ -49,12 +50,12 @@ const {error}=useSearchParams((state)=>state.user)
     const isValid = validateForm();
 
     if (isValid) {
-      dispatch(loginUser(inputValue)).then((result) => {
-        if (result) {
+      dispatch(loginUser(inputValue))
+      .then((result:any) => {
+        if (result.payload) {
           setInputValue({ email: "", password: "" });
           navigate("/home");
         }
-        console.log(error);
       });
     }
   };

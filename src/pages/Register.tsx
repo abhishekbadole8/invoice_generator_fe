@@ -1,8 +1,9 @@
 import { useState, ChangeEvent, FormEvent } from "react";
-import { registerUser } from "../store/store/UserSlice";
+import { registerUser } from "../store/UserSlice";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { AppDispatch } from "../store/configureStore";
 
 interface InputValue {
   name: string;
@@ -18,7 +19,7 @@ interface ErrorMsg {
 }
 
 export default function Register() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate()
   const [inputValue, setInputValue] = useState<InputValue>({
     name: "",
@@ -66,7 +67,8 @@ export default function Register() {
     const isValid = validateForm();
 
     if (isValid) {
-      dispatch(registerUser(inputValue)).then((result) => {
+      dispatch(registerUser(inputValue))
+      .then((result:any) => {
         if (result.payload) {
           setInputValue({ name: "", email: "", password: "" });
           navigate("/login");
