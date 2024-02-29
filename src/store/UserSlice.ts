@@ -36,11 +36,11 @@ export const registerUser = createAsyncThunk<string, UserCredential>(
   "user/register",
   async (userCredential) => {
     try {
-      await axios.post<{ authToken: string }>(
+      const response =await axios.post<{ authToken: string }>(
         `${hostname}/api/user/register`,
         userCredential
       );
-      return true;
+      return response.data.authToken;
     } catch (error: any) {
       throw new Error(error.response?.data?.message);
     }
